@@ -1,10 +1,10 @@
 from sys import exit
 from random import randint
 from textwrap import dedent
+from .parser import route_action  # ← 新增导入
 
 
 class Scene(object):
-
     def enter(self):
         print("前方的路以后再来探索吧")
         print("请在子类中重写enter()方法")
@@ -12,9 +12,7 @@ class Scene(object):
 
 
 class Detention(Scene):
-
     def enter(self):
-
         rand = randint(1, 3)
         if rand == 1:
             print(dedent("""
@@ -35,9 +33,6 @@ class Detention(Scene):
                         先生罚你到课室门口站一天。
                         同窗好友纷纷嘲笑你，你感觉颜面扫地，无地自容。
                         """))
-
-
-
         exit(1)
 
 
@@ -55,7 +50,6 @@ class LibraryDetention(Detention):
 
 
 class SchoolRoom(Scene):
-
     def enter(self):
         print(dedent("""
         戒尺“啪！”又敲桌子了！
@@ -63,26 +57,11 @@ class SchoolRoom(Scene):
         今天可是庙会！再不出去就没了！
         快选：假装肚子疼 / 偷偷溜走 / 翻窗
         """))
-
         action = input("> ")
-
-        if action == "假装肚子疼":
-            print(dedent("""
-            “先生…我肚子好痛…”
-            他皱着眉说：“速去速回，莫要嬉游。”
-            成了！我一溜烟跑向后院！
-            """))
-            return 'courtyard'
-        
-        elif action == "翻窗":
-            return 'library_detention'
-    
-        else:
-            return 'detention'
+        return route_action("school_room", action)
 
 
 class Courtyard(Scene):
-     
     def enter(self):
         print(dedent("""
         后院没人！太好了！
@@ -91,21 +70,8 @@ class Courtyard(Scene):
         心跳得好快！
         挖花盆？翻墙？还是装作散步？
         """))
-
         action = input("> ")
-
-        if action == "挖花盆":
-            print(dedent("""
-            哗啦！土刨开——下面是个洞！
-            我钻进去，眼前全是红灯笼！
-            庙会！！我来了！！
-            """))
-            return 'temple_fair'
-        elif action == "翻墙":
-            return 'wall_climb'
-        else :
-            print("我暂时不能理解这个选择")
-            return 'courtyard'
+        return route_action("courtyard", action)
 
 
 class gate(Scene):
@@ -118,29 +84,17 @@ class gate(Scene):
         汝夜奔私逃，成何体统？！”
         完蛋……腿都动不了了……
         """))
+        return 'detention'  # 注意：这里仍是固定跳转，无需路由
 
-        
-        return 'detention'
 
 class WallClimb(Scene):
-
     def enter(self):
-
         print("你翻过了墙，接下来是向左还是向右呢？")
-        action = input(">")
-
-        if action == "向右":
-            return 'gate'
-        elif action == "向左":
-            return 'temple_fair'
-        else :
-            print("我暂时不能理解这个选择")
-            return 'wall_climb'
-
+        action = input("> ")
+        return route_action("wall_climb", action)
 
 
 class TempleFair(Scene):
-
     def enter(self):
         print(dedent("""
         糖葫芦！糖画！打陀螺！皮影戏！
@@ -149,5 +103,3 @@ class TempleFair(Scene):
         逃学成功！爽！！
         """))
         return 'temple_fair'
-
-
